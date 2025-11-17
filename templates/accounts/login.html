@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - TBZ Blogs{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center my-5">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </h2>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Username Field -->
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                Username
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.username.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                Password
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.password.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Remember Me Checkbox -->
+                        <div class="mb-3 form-check">
+                            {{ form.remember_me }}
+                            <label for="{{ form.remember_me.id_for_label }}" class="form-check-label">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Sign In
+                        </button>
+                    </form>
+
+                    <hr class="border-secondary">
+
+                    <!-- Registration Link -->
+                    <p class="text-center text-muted">
+                        Don't have an account?
+                        <a href="{% url 'register' %}" class="text-primary text-decoration-none">
+                            Register here
+                        </a>
+                    </p>
+
+                    <!-- Password Reset Link -->
+                    <p class="text-center">
+                        <a href="#" class="text-muted text-decoration-none small">
+                            Forgot password?
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Demo Credentials -->
+            <div class="alert alert-info mt-4" role="alert">
+                <h6 class="alert-heading">
+                    <i class="bi bi-info-circle"></i> Demo Credentials
+                </h6>
+                <small>
+                    <strong>Username:</strong> john_doe<br>
+                    <strong>Password:</strong> testpass123<br>
+                    <br>
+                    Or register a new account to get started!
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

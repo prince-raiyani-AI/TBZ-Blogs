@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}My Blogs - TBZ Blogs{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-collection"></i> My Blogs
+            </h1>
+            <p class="lead text-muted">
+                Manage your blog posts and track their performance
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'dashboard:analytics_dashboard' %}" class="btn btn-info btn-lg">
+                <i class="bi bi-graph-up"></i> View Analytics
+            </a>
+            <a href="{% url 'blog_create' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle"></i> Create New Post
+            </a>
+        </div>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="mb-4">
+        <div class="btn-group" role="group">
+            <a href="{% url 'my_blogs' %}" class="btn btn-outline-secondary {% if not status_filter %}active{% endif %}">
+                All Posts ({{ total_posts }})
+            </a>
+            <a href="{% url 'my_blogs' %}?status=published" class="btn btn-outline-success {% if status_filter == 'published' %}active{% endif %}">
+                <i class="bi bi-cloud-check"></i> Published
+            </a>
+            <a href="{% url 'my_blogs' %}?status=draft" class="btn btn-outline-warning {% if status_filter == 'draft' %}active{% endif %}">
+                <i class="bi bi-file-text"></i> Drafts
+            </a>
+        </div>
+    </div>
+
+    <!-- Blogs Table -->
+    {% if blogs.object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover border-secondary">
+                <thead class="table-dark">
+                    <tr>
+                        <th>
+                            <i class="bi bi-type"></i> Title
+                        </th>
+                        <th class="text-center">
+                            <i class="bi bi-cloud-check"></i> Status
+                        </th>
+                        <th class="text-center">
+                            <i class="bi bi-eye"></i> Views
+                        </th>
+                        <th class="text-center">
+                            <i class="bi bi-chat"></i> Comments
+                        </th>
+                        <th class="text-center">
+                            <i class="bi bi-hand-thumbs-up"></i> Likes
+                        </th>
+                        <th class="text-center">
+                            <i class="bi bi-calendar"></i> Date
+                        </th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for blog in blogs.object_list %}
+                        <tr>
+                            <!-- Title -->
+                            <td>
+                                <div class="d-flex gap-2 align-items-center">
+                                    {% if blog.featured_image %}
+                                        <img src="{{ blog.featured_image.url }}" alt="{{ blog.title }}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="bi bi-image text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong class="text-truncate d-block" style="max-width: 250px;">
+                                            {% if blog.status == 'published' %}
+                                                <a href="{% url 'blog_detail' slug=blog.slug %}" class="text-decoration-none text-white hover-primary">
+                                                    {{ blog.title }}
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'blog_edit' slug=blog.slug %}" class="text-decoration-none text-white hover-primary">
+                                                    {{ blog.title }}
+                                                </a>
+                                            {% endif %}
+                                        </strong>
+                                        <small class="text-muted">{{ blog.excerpt|truncatewords:5 }}</small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Status -->
+                            <td class="text-center">
+                                {% if blog.status == 'published' %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-cloud-check"></i> Published
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-file-text"></i> Draft
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Views -->
+                            <td class="text-center">
+                                <strong>{{ blog.views_count }}</strong>
+                            </td>
+
+                            <!-- Comments -->
+                            <td class="text-center">
+                                <strong>{{ blog.comments_count }}</strong>
+                            </td>
+
+                            <!-- Likes -->
+                            <td class="text-center">
+                                <strong class="text-success">{{ blog.likes_count }}</strong>
+                            </td>
+
+                            <!-- Date -->
+                            <td class="text-center">
+                                <small class="text-muted">{{ blog.created_at|date:"M d, y" }}</small>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    {% if blog.status == 'published' %}
+                                        <a href="{% url 'blog_detail' slug=blog.slug %}" class="btn btn-outline-info" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'blog_edit' slug=blog.slug %}" class="btn btn-outline-info" title="Edit (Draft)">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    {% endif %}
+                                    <a href="{% url 'blog_edit' slug=blog.slug %}" class="btn btn-outline-warning" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'dashboard:blog_analytics' slug=blog.slug %}" class="btn btn-outline-info" title="Analytics">
+                                        <i class="bi bi-graph-up"></i>
+                                    </a>
+                                    <a href="{% url 'blog_delete' slug=blog.slug %}" class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if blogs.has_other_pages %}
+            <nav aria-label="Blog pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if blogs.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                                <i class="bi bi-chevron-double-left"></i> First
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ blogs.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in blogs.paginator.page_range %}
+                        {% if blogs.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > blogs.number|add:'-3' and num < blogs.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                                    {{ num }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if blogs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ blogs.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ blogs.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                                Last <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <!-- No Blogs -->
+        <div class="alert alert-warning text-center py-5" role="alert">
+            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+            <h4 class="mt-3">No blog posts yet</h4>
+            <p class="text-muted mb-3">
+                You haven't created any blog posts yet.
+            </p>
+            <a href="{% url 'blog_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create Your First Blog
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .hover-primary:hover {
+        color: #0d6efd !important;
+    }
+</style>
+{% endblock %}
